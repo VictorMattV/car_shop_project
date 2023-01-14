@@ -14,11 +14,20 @@ export default class CarModel {
       buyValue: { type: Number, required: true },
       doorsQty: { type: Number, required: true },
       seatsQty: { type: Number, required: true },
+    }, {
     });
     this.model = models.Car || model('Car', this.schema);
   }
 
-  public async create(car: ICar): Promise<ICar> {
+  async create(car: ICar): Promise<ICar> {
     return this.model.create({ ...car });
+  }
+
+  async findAll(): Promise<ICar[]> {
+    return this.model.find();
+  }
+
+  async findById(_id: string): Promise<ICar | null> {
+    return this.model.findOne({ _id });
   }
 }
