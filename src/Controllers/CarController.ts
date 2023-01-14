@@ -44,8 +44,8 @@ export default class CarController {
   }
 
   async getById() {
+    const { id } = this.req.params;
     try {
-      const { id } = this.req.params;
       const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
       if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
       const car = await this.service.getById(id);
@@ -55,4 +55,30 @@ export default class CarController {
       this.next(err);
     }
   } 
+
+  async updateById() {
+    const { id } = this.req.params;
+    try {
+      const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
+      if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
+
+      const findCar = await this.service.getById(id);
+      if (!findCar) return this.res.status(404).json({ message: 'Car not found' });
+
+      const car: ICar = {
+        model: this.req.body.model,
+        year: this.req.body.year,
+        color: this.req.body.color,
+        status: this.req.body.status,
+        buyValue: this.req.body.buyValue,
+        doorsQty: this.req.body.doorsQty,
+        seatsQty: this.req.body.seatsQty,
+      };
+
+      const updateCar = await this.service.updateById(id, car);
+      return this.res.status(200).json(updateCar);
+    } catch (err) {
+      this.next(err);
+    }
+  }
 }
