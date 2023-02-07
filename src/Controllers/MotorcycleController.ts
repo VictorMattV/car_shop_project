@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import IMotorcycle from '../Interfaces/IMotorcycle';
 import MotorcycleService from '../Services/MotorcycleService';
+import { INVALID_MONGO, INVALID_MOTORCYCLE } from '../utils';
 
 export default class MotorcycleController {
   private req: Request;
@@ -47,9 +48,9 @@ export default class MotorcycleController {
     const { id } = this.req.params;
     try {
       const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
-      if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
       const motorcycle = await this.service.getById(id);
-      if (!motorcycle) return this.res.status(404).json({ message: 'Motorcycle not found' });
+      if (!motorcycle) return this.res.status(404).json(INVALID_MOTORCYCLE);
       return this.res.status(200).json(motorcycle);
     } catch (err) {
       this.next(err);
@@ -60,10 +61,10 @@ export default class MotorcycleController {
     const { id } = this.req.params;
     try {
       const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
-      if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
 
       const findMotorcycle = await this.service.getById(id);
-      if (!findMotorcycle) return this.res.status(404).json({ message: 'Motorcycle not found' });
+      if (!findMotorcycle) return this.res.status(404).json(INVALID_MOTORCYCLE);
 
       const motorcycle: IMotorcycle = {
         model: this.req.body.model,
@@ -81,4 +82,18 @@ export default class MotorcycleController {
       this.next(err);
     }
   }
+
+  async deleteById() {
+    const { id } = this.req.params;
+    try {
+      const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
+      const motorcycle = await this.service.getById(id);
+      if (!motorcycle) return this.res.status(404).json(INVALID_MOTORCYCLE);
+      await this.service.deleteById(id);
+      return this.res.status(204).json();
+    } catch (err) {
+      this.next(err);
+    }
+  } 
 }

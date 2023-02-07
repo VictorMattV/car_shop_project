@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
+import { INVALID_CAR, INVALID_MONGO } from '../utils';
 
 export default class CarController {
   private req: Request;
@@ -47,9 +48,9 @@ export default class CarController {
     const { id } = this.req.params;
     try {
       const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
-      if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
       const car = await this.service.getById(id);
-      if (!car) return this.res.status(404).json({ message: 'Car not found' });
+      if (!car) return this.res.status(404).json(INVALID_CAR);
       return this.res.status(200).json(car);
     } catch (err) {
       this.next(err);
@@ -60,10 +61,10 @@ export default class CarController {
     const { id } = this.req.params;
     try {
       const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
-      if (!validateID.test(id)) return this.res.status(422).json({ message: 'Invalid mongo id' });
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
 
       const findCar = await this.service.getById(id);
-      if (!findCar) return this.res.status(404).json({ message: 'Car not found' });
+      if (!findCar) return this.res.status(404).json(INVALID_CAR);
 
       const car: ICar = {
         model: this.req.body.model,
@@ -81,4 +82,18 @@ export default class CarController {
       this.next(err);
     }
   }
+
+  async deleteById() {
+    const { id } = this.req.params;
+    try {
+      const validateID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
+      if (!validateID.test(id)) return this.res.status(422).json(INVALID_MONGO);
+      const car = await this.service.getById(id);
+      if (!car) return this.res.status(404).json(INVALID_CAR);
+      await this.service.deleteById(id);
+      return this.res.status(204).json();
+    } catch (err) {
+      this.next(err);
+    }
+  } 
 }

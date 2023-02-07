@@ -42,4 +42,9 @@ export default class MotorcycleService {
     }
     return motorcycle;
   }
+
+  async deleteById(id: string) {
+    const carODM = new MotorcycleODM();
+    await carODM.deleteById(id);
+  }
 }

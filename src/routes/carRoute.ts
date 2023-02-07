@@ -3,24 +3,32 @@ import CarController from '../Controllers/CarController';
 
 const routes = Router();
 
+const cars = '/cars';
+const carsId = '/cars/:id';
+
 routes.post(
-  '/cars',
+  cars,
   (req, res, next) => new CarController(req, res, next).create(),
 );
 
 routes.get(
-  '/cars',
+  cars,
   (req, res, next) => new CarController(req, res, next).getAll(),
 );
 
 routes.get(
-  '/cars/:id',
+  carsId,
   (req, res, next) => new CarController(req, res, next).getById(),
 );
  
 routes.put(
-  '/cars/:id',
+  carsId,
   (req, res, next) => new CarController(req, res, next).updateById(),
+);
+
+routes.delete(
+  carsId,
+  (req, res, next) => new CarController(req, res, next).deleteById(),
 );
 
 export default routes;
